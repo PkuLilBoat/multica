@@ -215,7 +215,7 @@ export function MindmapView({
             style={{ left: node.x, top: node.y, width: MINDMAP_CARD_WIDTH, height: MINDMAP_CARD_HEIGHT }} onClick={() => setSelected(node.key)}>
             <div className="flex min-w-0 items-center gap-2">
               {node.childCount > 0 ? <button type="button" aria-label={node.collapsed ? t(($) => $.mindmap.expand) : t(($) => $.mindmap.collapse)} aria-expanded={!node.collapsed}
-                className="shrink-0 rounded p-1 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
+                className="shrink-0 rounded-sm p-1 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-primary"
                 onClick={(event) => { event.stopPropagation(); setExpanded((current) => new Map(current).set(node.key, node.collapsed)); }}>
                 <ChevronRight className={`size-3.5 ${node.collapsed ? "" : "rotate-90"}`} />
               </button> : <span className="w-5 shrink-0" />}
