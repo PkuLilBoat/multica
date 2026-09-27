@@ -459,12 +459,14 @@ export function SaveViewDialog({
   open,
   onOpenChange,
   scope,
+  allowMindmap = false,
   editView = null,
   seedFromDefinition = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   scope: SaveViewScope;
+  allowMindmap?: boolean;
   /** Edit mode: same dialog, prefilled from this view; confirm PATCHes it
    *  (with optimistic-concurrency 409 handling) instead of creating. */
   editView?: IssueView | null;
@@ -806,7 +808,7 @@ export function SaveViewDialog({
 
           {draftStore && (
             <ViewStoreProvider store={draftStore}>
-              <DraftDefinitionFields allowMindmap={scope.kind === "workspace"} />
+              <DraftDefinitionFields allowMindmap={allowMindmap && scope.kind === "workspace"} />
             </ViewStoreProvider>
           )}
         </div>

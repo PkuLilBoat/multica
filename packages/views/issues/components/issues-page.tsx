@@ -16,6 +16,7 @@ import { IssueSurface } from "../surface/issue-surface";
 import { IssuesHeader } from "./issues-header";
 
 function IssuesSurfaceHeader({
+  enableMindmap,
   issues,
   workingAgents,
   isRefreshing,
@@ -23,6 +24,7 @@ function IssuesSurfaceHeader({
   tableFacetCounts,
   onTableFacetChange,
 }: {
+  enableMindmap: boolean;
   issues: Issue[];
   workingAgents: WorkingAgentSummary[] | undefined;
   isRefreshing: boolean;
@@ -44,7 +46,7 @@ function IssuesSurfaceHeader({
       </PageHeader>
       <IssuesHeader
         scopedIssues={issues}
-        allowMindmap
+        allowMindmap={enableMindmap}
         workingAgents={workingAgents}
         dateFilter={dateFilter}
         onDateFilterChange={setDateFilter}
@@ -56,7 +58,7 @@ function IssuesSurfaceHeader({
   );
 }
 
-export function IssuesPage() {
+export function IssuesPage({ enableMindmap = false }: { enableMindmap?: boolean }) {
   const { t } = useT("issues");
   const scope = useIssuesScope("issues");
 
@@ -64,10 +66,13 @@ export function IssuesPage() {
     <div className="flex flex-1 min-h-0 flex-col">
       <IssueSurface
         scope={{ type: "workspace", actorKind: scope }}
-        modes={["board", "list", "table", "swimlane", "mindmap"]}
+        modes={enableMindmap
+          ? ["board", "list", "table", "swimlane", "mindmap"]
+          : ["board", "list", "table", "swimlane"]}
         batchToolbar="list"
         renderHeader={({ controller }) => (
           <IssuesSurfaceHeader
+            enableMindmap={enableMindmap}
             issues={controller.surfaceIssues}
             workingAgents={controller.workingAgents}
             isRefreshing={controller.isRefreshing}

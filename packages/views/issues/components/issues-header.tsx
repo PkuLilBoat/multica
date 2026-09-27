@@ -1425,6 +1425,7 @@ export function IssuesHeader({
         open={saveViewOpen}
         onOpenChange={setSaveViewOpen}
         scope={dialogScope}
+        allowMindmap={allowMindmap}
         editView={editTarget?.view ?? null}
         seedFromDefinition={editTarget?.fromDefinition ?? false}
       />
