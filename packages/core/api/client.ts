@@ -26,6 +26,7 @@ import type {
   IssueTableGroupsResponse,
   IssueTableRowsRequest,
   IssueTableRowsResponse,
+  IssueDependenciesResponse,
   Agent,
   MikaBootstrapResponse,
   CreateAgentRequest,
@@ -312,6 +313,8 @@ import {
   IssueTableFacetsResponseSchema,
   IssueTableGroupsResponseSchema,
   IssueTableRowsResponseSchema,
+  IssueDependenciesResponseSchema,
+  EMPTY_ISSUE_DEPENDENCIES_RESPONSE,
   ListAutopilotsResponseSchema,
   EMPTY_LIST_AUTOPILOTS_RESPONSE,
   AutopilotRunSchema,
@@ -1063,6 +1066,13 @@ export class ApiClient {
   }
 
   // Issues
+  async listIssueDependencies(): Promise<IssueDependenciesResponse> {
+    const raw = await this.fetch<unknown>("/api/issues/dependencies");
+    return parseWithFallback(raw, IssueDependenciesResponseSchema, EMPTY_ISSUE_DEPENDENCIES_RESPONSE, {
+      endpoint: "GET /api/issues/dependencies",
+    });
+  }
+
   async listIssues(params?: ListIssuesParams): Promise<ListIssuesResponse> {
     const search = new URLSearchParams();
     if (params?.limit) search.set("limit", String(params.limit));

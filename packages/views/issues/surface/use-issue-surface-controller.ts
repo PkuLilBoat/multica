@@ -69,6 +69,7 @@ export interface IssueSurfaceController {
   createDefaults: IssueCreateDefaults;
   viewMode: IssueSurfaceMode;
   allowGantt: boolean;
+  allowMindmap: boolean;
   surfaceIssues: Issue[];
   projectIssues: Issue[];
   issues: Issue[];
@@ -114,7 +115,7 @@ export interface IssueSurfaceController {
   /** Load one server facet when its filter submenu is opened. */
   setActiveTableFacet: (facet: IssueTableFacetSpec | null) => void;
   setTableSearch: (query: string) => void;
-  exportTableIssues: () => Promise<Issue[]>;
+  exportTableIssues: (query?: IssueTableQuerySpec) => Promise<Issue[]>;
   isLoading: boolean;
   /** See IssueSurfaceData.isRefreshing — placeholder-backed revalidation. */
   isRefreshing: boolean;
@@ -321,8 +322,10 @@ export function useIssueSurfaceController({
       ? "status"
       : grouping;
   const usesGantt = effectiveViewMode === "gantt" && !!projectId;
-  const usesTable = effectiveViewMode === "table";
-  const activeSearch = usesTable ? tableSearch : search;
+  const usesTable = effectiveViewMode === "table" || effectiveViewMode === "mindmap";
+  // The map searches locally so ancestor paths remain visible while matching
+  // nodes are highlighted. Other Table-derived filters still run server-side.
+  const activeSearch = effectiveViewMode === "table" ? tableSearch : search;
   const debouncedActiveSearch = useDebouncedTableSearch(activeSearch);
   const usesServerStatusSurface =
     effectiveViewMode === "list" ||
@@ -752,6 +755,7 @@ export function useIssueSurfaceController({
       // so grouping by project has to load it even when no card/column shows
       // the project itself.
       (usesTable && tableGrouping === "project") ||
+      effectiveViewMode === "mindmap" ||
       (effectiveViewMode === "board" && effectiveGrouping === "project") ||
       (effectiveViewMode === "swimlane" && swimlaneGrouping === "project"),
   });
@@ -778,7 +782,7 @@ export function useIssueSurfaceController({
     workspaceWorkingAgents,
   ]);
 
-  const exportTableIssues = useCallback(async () => {
+  const exportTableIssues = useCallback(async (query: IssueTableQuerySpec = tableQuerySpec) => {
     const issues: Issue[] = [];
     const seenIssueIds = new Set<string>();
     const seenCursors = new Set<string>();
@@ -791,7 +795,7 @@ export function useIssueSurfaceController({
         seenCursors.add(cursor);
       }
       const page = await api.listIssueTableRows({
-        query: tableQuerySpec,
+        query,
         group: { kind: "none" },
         group_key: null,
         hierarchy: { enabled: false },
@@ -839,6 +843,7 @@ export function useIssueSurfaceController({
     createDefaults: resolvedCreateDefaults,
     viewMode: effectiveViewMode,
     allowGantt: allowedModes.has("gantt") && !!projectId,
+    allowMindmap: allowedModes.has("mindmap"),
     ...surfaceData,
     workingAgents,
     hasActiveFilters,

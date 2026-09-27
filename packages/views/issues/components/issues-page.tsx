@@ -44,6 +44,7 @@ function IssuesSurfaceHeader({
       </PageHeader>
       <IssuesHeader
         scopedIssues={issues}
+        allowMindmap
         workingAgents={workingAgents}
         dateFilter={dateFilter}
         onDateFilterChange={setDateFilter}
@@ -63,7 +64,7 @@ export function IssuesPage() {
     <div className="flex flex-1 min-h-0 flex-col">
       <IssueSurface
         scope={{ type: "workspace", actorKind: scope }}
-        modes={["board", "list", "table", "swimlane"]}
+        modes={["board", "list", "table", "swimlane", "mindmap"]}
         batchToolbar="list"
         renderHeader={({ controller }) => (
           <IssuesSurfaceHeader
